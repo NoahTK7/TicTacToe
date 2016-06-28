@@ -75,7 +75,8 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hInstance      = hInstance;
     wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_TICTACTOE));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
+//  wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.hbrBackground  = (HBRUSH)GetStockObject(GRAY_BRUSH);
     wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_TICTACTOE);
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
@@ -120,7 +121,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_PAINT    - Paint the main window
 //  WM_DESTROY  - post a quit message and return
 //
-//
+
+//Global Variables
+const int CELL_SIZE = 100;
+
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -142,11 +147,35 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
+
+	case WM_GETMINMAXINFO:
+		{
+			MINMAXINFO * pMinMax = (MINMAXINFO*)lParam;
+
+			pMinMax->ptMinTrackSize.x = CELL_SIZE * 5;
+			pMinMax->ptMinTrackSize.y = CELL_SIZE * 5;
+		}
+		break;
+
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: Add any drawing code that uses hdc here...
+
+			RECT rc;
+			if (GetClientRect(hWnd, &rc))
+			{
+				int width	= rc.right - rc.left;
+				int height	= rc.bottom - rc.top;
+
+				int left	= (width - CELL_SIZE * 3) / 2;
+				int top		= (height - CELL_SIZE * 3) / 2;
+				int right	= left + CELL_SIZE * 3;
+				int bottom	= top + CELL_SIZE * 3;
+
+				Rectangle(hdc, left, top, right, bottom);
+			}
+
             EndPaint(hWnd, &ps);
         }
         break;
