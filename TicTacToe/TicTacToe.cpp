@@ -126,6 +126,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 const int CELL_SIZE = 100;
 
 
+//Functions
+BOOL GetGameBoardRect(HWND hwnd, RECT * pRect);
+BOOL DrawManyLines(HWND hWnd, HDC hdc);
+
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -161,20 +166,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-
+			
 			RECT rc;
-			if (GetClientRect(hWnd, &rc))
+
+			if (GetGameBoardRect(hWnd, &rc))
 			{
-				int width	= rc.right - rc.left;
-				int height	= rc.bottom - rc.top;
-
-				int left	= (width - CELL_SIZE * 3) / 2;
-				int top		= (height - CELL_SIZE * 3) / 2;
-				int right	= left + CELL_SIZE * 3;
-				int bottom	= top + CELL_SIZE * 3;
-
-				Rectangle(hdc, left, top, right, bottom);
+				FillRect(hdc, &rc, (HBRUSH)GetStockObject(WHITE_BRUSH));
+				//Rectangle(hdc, rc.left, rc.top, rc.right, rc.bottom);
 			}
+			else {
+				//throw error
+			}
+
+			//for fun
+			//DrawManyLines(hWnd, hdc);
+
+			MoveToEx(hdc, 0, 0, NULL);
+			LineTo(hdc, 100, 100);
 
             EndPaint(hWnd, &ps);
         }
@@ -206,4 +214,50 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     return (INT_PTR)FALSE;
+}
+
+BOOL GetGameBoardRect(HWND hWnd, RECT * pRect)
+{
+	RECT rc;
+	if (GetClientRect(hWnd, &rc))
+	{
+		int width = rc.right - rc.left;
+		int height = rc.bottom - rc.top;
+
+		pRect->left = (width - CELL_SIZE * 3) / 2;
+		pRect->top = (height - CELL_SIZE * 3) / 2;
+
+		pRect->right = pRect->left + CELL_SIZE * 3;
+		pRect->bottom = pRect->top + CELL_SIZE * 3;
+
+		return TRUE;
+	}
+
+	SetRectEmpty(pRect);
+	return FALSE;
+}
+
+BOOL DrawManyLines(HWND hWnd, HDC hdc)
+{
+
+	RECT rc;
+	if (GetClientRect(hWnd, &rc))
+	{
+		int width = rc.right - rc.left;
+		int height = rc.bottom - rc.top;
+
+		for (int x = 0; x < width; x += 10)
+		{
+			for (int y = 0; y < height; y+=10)
+			{
+				MoveToEx(hdc, 0, 0, NULL);
+				LineTo(hdc, x, y);
+			}
+		}
+
+		return TRUE;
+	}
+
+	return FALSE;
+
 }
