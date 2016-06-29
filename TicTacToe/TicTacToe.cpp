@@ -5,6 +5,7 @@
 #include "TicTacToe.h"
 #include "Game.h"
 #include "Window.h"
+#include "Board.h"
 
 #define MAX_LOADSTRING 100
 
@@ -152,7 +153,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_GETMINMAXINFO:
 		{
-			window.setMinSize(lParam, game.CELL_SIZE*5, game.CELL_SIZE*5);
+			window.setMinSize(lParam, Board::CELL_SIZE*5, Board::CELL_SIZE*5);
 		}
 		break;
 
