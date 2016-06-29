@@ -15,8 +15,8 @@ BOOL Game::paint(HWND hWnd, HDC hdc)
 {
 	Board board = Board(hWnd);
 
-	//FillRect(hdc, &board, (HBRUSH)GetStockObject(WHITE_BRUSH));
-	Rectangle(hdc, board.left, board.top, board.right, board.bottom);
+	FillRect(hdc, &board, (HBRUSH)GetStockObject(WHITE_BRUSH));
+	//Rectangle(hdc, board.left, board.top, board.right, board.bottom);
 
 	//for fun
 	//DrawManyLines(hWnd, hdc, board);
@@ -76,13 +76,14 @@ void Game::DrawLine(HDC hdc, int x1, int y1, int x2, int y2)
 
 BOOL Game::DrawBoardLines(HDC hdc, Board board)
 {
-	//Vertical
-	DrawLine(hdc, board.left + CELL_SIZE, board.top, board.left + CELL_SIZE, board.bottom);
-	DrawLine(hdc, board.left + (CELL_SIZE*2), board.top, board.left + (CELL_SIZE*2), board.bottom);
+	for (int i = 0; i < 4; ++i)
+	{
+		//Vertical
+		DrawLine(hdc, board.left + (CELL_SIZE * i), board.top, board.left + (CELL_SIZE * i), board.bottom);
 
-	//Horizontal
-	DrawLine(hdc, board.left, board.top + CELL_SIZE, board.right, board.top + CELL_SIZE);
-	DrawLine(hdc, board.left, board.top + (CELL_SIZE * 2), board.right, board.top + (CELL_SIZE * 2));
+		//Horizontal
+		DrawLine(hdc, board.left, board.top + (CELL_SIZE * i), board.right, board.top + (CELL_SIZE * i));
+	}
 
 	return TRUE;
 }
