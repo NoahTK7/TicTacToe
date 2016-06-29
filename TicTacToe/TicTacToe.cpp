@@ -3,6 +3,8 @@
 
 #include "stdafx.h"
 #include "TicTacToe.h"
+#include "Game.h"
+#include "Window.h"
 
 #define MAX_LOADSTRING 100
 
@@ -10,6 +12,9 @@
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+
+Game game;
+Window window;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -122,14 +127,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_DESTROY  - post a quit message and return
 //
 
-//Global Variables
-const int CELL_SIZE = 100;
-
-
-//Functions
-BOOL GetGameBoardRect(HWND hwnd, RECT * pRect);
-BOOL DrawManyLines(HWND hWnd, HDC hdc);
-
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -155,10 +152,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_GETMINMAXINFO:
 		{
-			MINMAXINFO * pMinMax = (MINMAXINFO*)lParam;
-
-			pMinMax->ptMinTrackSize.x = CELL_SIZE * 5;
-			pMinMax->ptMinTrackSize.y = CELL_SIZE * 5;
+			window.setMinSize(lParam, game.CELL_SIZE*5, game.CELL_SIZE*5);
 		}
 		break;
 
@@ -167,22 +161,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
 			
-			RECT rc;
-
-			if (GetGameBoardRect(hWnd, &rc))
-			{
-				FillRect(hdc, &rc, (HBRUSH)GetStockObject(WHITE_BRUSH));
-				//Rectangle(hdc, rc.left, rc.top, rc.right, rc.bottom);
-			}
-			else {
-				//throw error
-			}
-
-			//for fun
-			//DrawManyLines(hWnd, hdc);
-
-			MoveToEx(hdc, 0, 0, NULL);
-			LineTo(hdc, 100, 100);
+			game.paint(hWnd, hdc);
 
             EndPaint(hWnd, &ps);
         }
@@ -216,48 +195,3 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     return (INT_PTR)FALSE;
 }
 
-BOOL GetGameBoardRect(HWND hWnd, RECT * pRect)
-{
-	RECT rc;
-	if (GetClientRect(hWnd, &rc))
-	{
-		int width = rc.right - rc.left;
-		int height = rc.bottom - rc.top;
-
-		pRect->left = (width - CELL_SIZE * 3) / 2;
-		pRect->top = (height - CELL_SIZE * 3) / 2;
-
-		pRect->right = pRect->left + CELL_SIZE * 3;
-		pRect->bottom = pRect->top + CELL_SIZE * 3;
-
-		return TRUE;
-	}
-
-	SetRectEmpty(pRect);
-	return FALSE;
-}
-
-BOOL DrawManyLines(HWND hWnd, HDC hdc)
-{
-
-	RECT rc;
-	if (GetClientRect(hWnd, &rc))
-	{
-		int width = rc.right - rc.left;
-		int height = rc.bottom - rc.top;
-
-		for (int x = 0; x < width; x += 10)
-		{
-			for (int y = 0; y < height; y+=10)
-			{
-				MoveToEx(hdc, 0, 0, NULL);
-				LineTo(hdc, x, y);
-			}
-		}
-
-		return TRUE;
-	}
-
-	return FALSE;
-
-}
