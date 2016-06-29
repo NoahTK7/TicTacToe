@@ -153,7 +153,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_GETMINMAXINFO:
 		{
-			window.setMinSize(lParam, Board::CELL_SIZE*5, Board::CELL_SIZE*5);
+			window.setMinSize(lParam, Game::CELL_SIZE*5, Game::CELL_SIZE*5);
 		}
 		break;
 

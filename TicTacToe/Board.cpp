@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Board.h"
+#include "Game.h"
 
 
 Board::Board(HWND hWnd)
@@ -10,11 +11,13 @@ Board::Board(HWND hWnd)
 		int width = rc.right - rc.left;
 		int height = rc.bottom - rc.top;
 
-		left = (width - CELL_SIZE * 3) / 2;
-		top = (height - CELL_SIZE * 3) / 2;
+		//top left corner
+		left = (width - Game::CELL_SIZE * 3) / 2; //x
+		top = (height - Game::CELL_SIZE * 3) / 2; //y
 
-		right = left + CELL_SIZE * 3;
-		bottom = top + CELL_SIZE * 3;
+		//bottom right corner
+		right = left + Game::CELL_SIZE * 3; //x
+		bottom = top + Game::CELL_SIZE * 3; //y
 
 	} 
 	else
