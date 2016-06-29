@@ -16,8 +16,8 @@ BOOL Game::paint(HWND hWnd, HDC hdc)
 
 	if (GetGameBoardRect(hWnd, &rc))
 	{
-		//FillRect(hdc, &rc, (HBRUSH)GetStockObject(WHITE_BRUSH));
-		Rectangle(hdc, rc.left, rc.top, rc.right, rc.bottom);
+		FillRect(hdc, &rc, (HBRUSH)GetStockObject(WHITE_BRUSH));
+		//Rectangle(hdc, rc.left, rc.top, rc.right, rc.bottom);
 	}
 	else {
 		//throw error
@@ -25,7 +25,7 @@ BOOL Game::paint(HWND hWnd, HDC hdc)
 	}
 
 	//for fun
-	DrawManyLines(hWnd, hdc);
+	DrawManyLines(hWnd, hdc, rc);
 
 	MoveToEx(hdc, 0, 0, NULL);
 	LineTo(hdc, 100, 100);
@@ -54,21 +54,21 @@ BOOL Game::GetGameBoardRect(HWND hWnd, RECT * pRect)
 	return FALSE;
 }
 
-BOOL Game::DrawManyLines(HWND hWnd, HDC hdc)
+BOOL Game::DrawManyLines(HWND hWnd, HDC hdc, RECT rect)
 {
 
 	RECT rc;
-	if (GetClientRect(hWnd, &rc))
+	if (GetGameBoardRect(hWnd, &rc))
 	{
 		int width = rc.right - rc.left;
 		int height = rc.bottom - rc.top;
 
-		for (int x = 0; x < width; x += 10)
+		for (int x = 0; x <= width; x += 5)
 		{
-			for (int y = 0; y < height; y += 10)
+			for (int y = 0; y <= height; y += 5)
 			{
-				MoveToEx(hdc, 0, 0, NULL);
-				LineTo(hdc, x, y);
+				MoveToEx(hdc, rc.left, rc.top, NULL);
+				LineTo(hdc, rc.left + x, rc.top + y);
 			}
 		}
 

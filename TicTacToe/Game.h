@@ -9,6 +9,6 @@ public:
 	BOOL paint(HWND hWnd, HDC hdc);
 protected:
 	BOOL GetGameBoardRect(HWND hWnd, RECT * pRect);
-	BOOL DrawManyLines(HWND hWnd, HDC hdc);
+	BOOL DrawManyLines(HWND hWnd, HDC hdc, RECT rect);
 };
 
