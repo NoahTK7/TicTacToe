@@ -14,17 +14,14 @@ Game::~Game()
 BOOL Game::paint(HWND hWnd, HDC hdc)
 {
 	Board board = Board(hWnd);
-
-	FillRect(hdc, &board, (HBRUSH)GetStockObject(WHITE_BRUSH));
-	//Rectangle(hdc, board.left, board.top, board.right, board.bottom);
+	
+	board.DrawPadding(hWnd, hdc);
+	board.DrawBoard(hWnd, hdc);
 
 	//for fun
 	//DrawManyLines(hWnd, hdc, board);
 
 	DrawBoardLines(hdc, board);
-
-	MoveToEx(hdc, 0, 0, NULL);
-	LineTo(hdc, 100, 100);
 
 	return TRUE;
 }
@@ -76,7 +73,8 @@ void Game::DrawLine(HDC hdc, int x1, int y1, int x2, int y2)
 
 BOOL Game::DrawBoardLines(HDC hdc, Board board)
 {
-	for (int i = 0; i < 4; ++i)
+	//for (int i = 0; i < 4; ++i) closed box
+	for (int i = 1; i < 3; ++i)
 	{
 		//Vertical
 		DrawLine(hdc, board.left + (CELL_SIZE * i), board.top, board.left + (CELL_SIZE * i), board.bottom);
