@@ -12,25 +12,18 @@ Board::Board(HWND hWnd)
 		height = rc.bottom - rc.top;
 
 		//top left corner
-		left = (width - Game::CELL_SIZE * 3) / 2; //x
-		top = (height - Game::CELL_SIZE * 3) / 2; //y
+		left = (width - CELL_SIZE * 3) / 2; //x
+		top = (height - CELL_SIZE * 3) / 2; //y
 
 		//bottom right corner
-		right = left + Game::CELL_SIZE * 3; //x
-		bottom = top + Game::CELL_SIZE * 3; //y
+		right = left + CELL_SIZE * 3; //x
+		bottom = top + CELL_SIZE * 3; //y
 
 	}
 	else
 	{
 		//error?
 	}
-
-	/*left = pRect->left;
-	right = pRect->right;
-	top = pRect->top;
-	bottom = pRect->bottom;
-	width = right - left;
-	height = bottom - top;*/
 }
 
 
@@ -56,5 +49,44 @@ void Board::DrawPadding(HWND hWnd, HDC hdc)
 void Board::DrawBoard(HWND hWnd, HDC hdc)
 {
 	FillRect(hdc, this, (HBRUSH)GetStockObject(WHITE_BRUSH));
-	//Rectangle(hdc, this->left, this->top, this->right, this->bottom);
+	//Rectangle(hdc, this->left, this->top, this->right, this->bottom); solid outline
+}
+
+void Board::DrawLine(HDC hdc, int x1, int y1, int x2, int y2)
+{
+	MoveToEx(hdc, x1, y1, NULL);
+	LineTo(hdc, x2, y2);
+}
+
+BOOL Board::DrawBoardLines(HDC hdc)
+{
+	//for (int i = 0; i < 4; ++i) closed box
+	for (int i = 1; i < 3; ++i)
+	{
+		//Vertical
+		DrawLine(hdc, this->left + (CELL_SIZE * i), this->top, this->left + (CELL_SIZE * i), this->bottom);
+
+		//Horizontal
+		DrawLine(hdc, this->left, this->top + (CELL_SIZE * i), this->right, this->top + (CELL_SIZE * i));
+	}
+
+	return TRUE;
+}
+
+BOOL Board::DrawManyLines(HWND hWnd, HDC hdc)
+{
+	int width = this->right - this->left;
+	int height = this->bottom - this->top;
+
+	for (int x = 0; x <= width; x += 5)
+	{
+		for (int y = 0; y <= height; y += 5)
+		{
+			MoveToEx(hdc, this->left, this->top, NULL);
+			LineTo(hdc, this->left + x, this->top + y);
+		}
+	}
+
+	return TRUE;
+
 }
