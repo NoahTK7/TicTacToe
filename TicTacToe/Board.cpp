@@ -36,12 +36,12 @@ void Board::DrawPadding(HWND hWnd, HDC hdc)
 	RECT padding;
 
 	//top left corner
-	padding.left = this->left - 25;
-	padding.top = this->top - 25;
+	padding.left = this->left - CELL_SIZE / 4;
+	padding.top = this->top - CELL_SIZE / 4;
 
 	//bottom right corner
-	padding.right = this->right + 25;
-	padding.bottom = this->bottom + 25;
+	padding.right = this->right + CELL_SIZE / 4;
+	padding.bottom = this->bottom + CELL_SIZE / 4;
 
 	FillRect(hdc, &padding, (HBRUSH)GetStockObject(WHITE_BRUSH));
 }

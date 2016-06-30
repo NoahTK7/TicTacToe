@@ -6,6 +6,7 @@
 #include "Game.h"
 #include "Window.h"
 #include "Board.h"
+#include <windowsx.h>
 
 #define MAX_LOADSTRING 100
 
@@ -150,13 +151,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
+	case WM_LBUTTONDOWN:
+		{
+			int xPos = GET_X_LPARAM(lParam);
+			int yPos = GET_Y_LPARAM(lParam);
 
+			int index = window.GetCellNumberFromPoint(hWnd, xPos, yPos);
+
+			//Debug index
+			HDC hdc = GetDC(hWnd);
+			if (hdc != NULL)
+			{
+				WCHAR temp[100];
+				wsprintf(temp, L"Index = %d", index);
+				TextOut(hdc, xPos, yPos, temp, lstrlen(temp));
+
+				ReleaseDC(hWnd, hdc);
+			}
+		}
+		break;
 	case WM_GETMINMAXINFO:
 		{
 			window.setMinSize(lParam, Board::CELL_SIZE*5, Board::CELL_SIZE*5);
 		}
 		break;
-
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
