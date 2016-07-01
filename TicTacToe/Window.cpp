@@ -19,7 +19,7 @@ void Window::setMinSize(LPARAM lParam, int x, int y)
 	pMinMax->ptMinTrackSize.y = y;
 }
 
-int Window::GetCellNumberFromPoint(HWND hWnd, int x, int y)
+int Window::GetCellIndex(HWND hWnd, int x, int y)
 {
 	POINT pt = {x, y};
 	Board board = Board(hWnd);

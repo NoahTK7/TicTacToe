@@ -5,6 +5,7 @@
 
 Board::Board(HWND hWnd)
 {
+	//GetGameBoardRect
 	RECT rc;
 	if (GetClientRect(hWnd, &rc))
 	{
@@ -22,7 +23,7 @@ Board::Board(HWND hWnd)
 	}
 	else
 	{
-		//error?
+		//TODO: error?
 	}
 }
 
@@ -60,8 +61,8 @@ void Board::DrawLine(HDC hdc, int x1, int y1, int x2, int y2)
 
 BOOL Board::DrawBoardLines(HDC hdc)
 {
-	//for (int i = 0; i < 4; ++i) closed box
-	for (int i = 1; i < 3; ++i)
+	for (int i = 0; i < 4; ++i) // border
+	//for (int i = 1; i < 3; ++i) // no border
 	{
 		//Vertical
 		DrawLine(hdc, this->left + (CELL_SIZE * i), this->top, this->left + (CELL_SIZE * i), this->bottom);
@@ -89,4 +90,23 @@ BOOL Board::DrawManyLines(HWND hWnd, HDC hdc)
 
 	return TRUE;
 
+}
+
+//Static?
+BOOL Board::GetCellRect(HWND hWnd, int index, RECT * pRect)
+{
+	SetRectEmpty(pRect);
+	if (index < 0 || index > 8) 
+		return FALSE;
+
+	int x = index % 3; // colum
+	int y = index / 3; // row
+
+	pRect->left = this->left + (x * CELL_SIZE) + 1;
+	pRect->top = this->top + (y * CELL_SIZE) + 1;
+
+	pRect->right = pRect->left + CELL_SIZE - 1;
+	pRect->bottom = pRect->top + CELL_SIZE - 1;
+
+	return TRUE;
 }

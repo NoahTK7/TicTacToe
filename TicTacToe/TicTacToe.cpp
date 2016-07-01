@@ -156,18 +156,35 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			int xPos = GET_X_LPARAM(lParam);
 			int yPos = GET_Y_LPARAM(lParam);
 
-			int index = window.GetCellNumberFromPoint(hWnd, xPos, yPos);
+			int index = window.GetCellIndex(hWnd, xPos, yPos);
 
 			//Debug index
-			HDC hdc = GetDC(hWnd);
+			HDC hdc = GetDC(hWnd); //temp
 			if (hdc != NULL)
 			{
 				WCHAR temp[100];
 				wsprintf(temp, L"Index = %d", index);
 				TextOut(hdc, xPos, yPos, temp, lstrlen(temp));
 
-				ReleaseDC(hWnd, hdc);
+				if (index != -1) {
+
+					//game class for logic
+
+					Board board(hWnd); //temp
+					RECT cell;
+
+					board.GetCellRect(hWnd, index, &cell);
+
+					FillRect(hdc, &cell, (HBRUSH)GetStockObject(BLACK_BRUSH));
+
+				}
+				else
+				{
+					//TODO: error
+				}
+
 			}
+			ReleaseDC(hWnd, hdc);
 		}
 		break;
 	case WM_GETMINMAXINFO:
