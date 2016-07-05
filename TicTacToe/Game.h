@@ -7,6 +7,7 @@ public:
 	Game();
 	~Game();
 	BOOL paint(HWND hWnd, HDC hdc);
+	
 protected:
 };
 

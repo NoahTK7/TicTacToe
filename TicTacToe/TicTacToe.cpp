@@ -6,7 +6,6 @@
 #include "Game.h"
 #include "Window.h"
 #include "Board.h"
-#include <windowsx.h>
 
 #define MAX_LOADSTRING 100
 
@@ -17,6 +16,8 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
 Game game;
 Window window;
+
+HBRUSH HBRblue, HBRred;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -129,11 +130,17 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_DESTROY  - post a quit message and return
 //
 
-
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
+	case WM_CREATE:
+		{
+			// paint/graphics class <including board (some functions)>
+			HBRblue = CreateSolidBrush(RGB(0, 0, 255));
+			HBRred  = CreateSolidBrush(RGB(255, 0, 0));
+		}
+		break;
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
@@ -175,7 +182,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 					board.GetCellRect(hWnd, index, &cell);
 
-					FillRect(hdc, &cell, (HBRUSH)GetStockObject(BLACK_BRUSH));
+					FillRect(hdc, &cell, HBRred);
 
 				}
 				else
@@ -203,6 +210,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_DESTROY:
+		DeleteObject(HBRblue);
+		DeleteObject(HBRred);
         PostQuitMessage(0);
         break;
     default:
