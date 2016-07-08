@@ -18,6 +18,7 @@ Game game;
 Window window;
 
 HBRUSH HBRblue, HBRred;
+int playerTurn = 1;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -182,8 +183,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 					board.GetCellRect(hWnd, index, &cell);
 
-					FillRect(hdc, &cell, HBRred);
+					FillRect(hdc, &cell, (playerTurn == 2) ? HBRred : HBRblue);
 
+					playerTurn = (playerTurn == 2) ? 1 : 2;
 				}
 				else
 				{
