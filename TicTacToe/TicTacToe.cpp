@@ -17,8 +17,7 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 Game game;
 Window window;
 
-HBRUSH HBRblue, HBRred;
-int playerTurn = 1;
+HBRUSH HBRblue, HBRred; //graphics class
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -166,13 +165,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			int index = window.GetCellIndex(hWnd, xPos, yPos);
 
-			//Debug index
 			HDC hdc = GetDC(hWnd); //temp
 			if (hdc != NULL)
 			{
+				/*
+				Debug index
 				WCHAR temp[100];
 				wsprintf(temp, L"Index = %d", index);
 				TextOut(hdc, xPos, yPos, temp, lstrlen(temp));
+				*/
 
 				if (index != -1) {
 
@@ -182,10 +183,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					RECT cell;
 
 					board.GetCellRect(hWnd, index, &cell);
-
-					FillRect(hdc, &cell, (playerTurn == 2) ? HBRred : HBRblue);
-
-					playerTurn = (playerTurn == 2) ? 1 : 2;
+					if (game.ReserveCell(index)) {
+						FillRect(hdc, &cell, (game.playerTurn == 2) ? HBRred : HBRblue);
+						game.playerTurn = (game.playerTurn == 2) ? 1 : 2;
+					}
+					
 				}
 				else
 				{
