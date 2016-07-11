@@ -7,11 +7,16 @@ Draw::Draw(HWND hWnd, HDC hdc)
 {
 	window = hWnd;
 	context = hdc;
+
+	HBRblue = CreateSolidBrush(RGB(0, 0, 255));
+	HBRred = CreateSolidBrush(RGB(255, 0, 0));
 }
 
 
 Draw::~Draw()
 {
+	DeleteObject(HBRblue);
+	DeleteObject(HBRred);
 }
 
 
@@ -74,3 +79,53 @@ BOOL Draw::DrawManyLines(Board * board)
 	return TRUE;
 
 }
+
+BOOL Draw::DrawCrosshair(LPPOINT point)
+{
+	RECT rc;
+	POINT pt = { point->x, point->y };
+	if (GetClientRect(window, &rc))
+	{
+		if (PtInRect(&rc, pt)) {
+			DrawLine(rc.left, pt.y, rc.right, pt.y);
+			DrawLine(pt.x, rc.top, pt.x, rc.bottom);
+		}
+	}
+	return TRUE;
+}
+
+BOOL Draw::DrawCells(int * gb)
+{
+	for (int i = 0; i < 9; ++i) {
+		
+		//debug gameboard array
+		WCHAR temp[100];
+		wsprintf(temp, L"Index = %d", gb[i]);
+		TextOut(context, i*100, 0, temp, lstrlen(temp));
+
+		if (gb[i] != 0) {
+
+			Board board(window);
+			RECT cell;
+
+			board.GetCellRect(window, i, &cell);
+
+			HBRUSH HBRreds = CreateSolidBrush(RGB(255, 0, 0));
+			FillRect(context, &cell, (gb[i] == 2) ? HBRreds : HBRblue);
+			DeleteObject(HBRred);
+		}
+
+	}
+	
+	return TRUE;
+}
+
+//void Draw::CreateBrushes() {
+//	HBRblue = CreateSolidBrush(RGB(0, 0, 255));
+//	HBRred = CreateSolidBrush(RGB(255, 0, 0));
+//}
+//
+//void Draw::DestroyBrushes() {
+//	DeleteObject(HBRblue);
+//	DeleteObject(HBRred);
+//}

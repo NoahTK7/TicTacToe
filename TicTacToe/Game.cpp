@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "Game.h"
 #include "Board.h"
-#include "Draw.h"
 
 Game::Game()
 {
@@ -12,10 +11,9 @@ Game::~Game()
 {
 }
 
-BOOL Game::paint(HWND hWnd, HDC hdc)
+BOOL Game::paint(HWND hWnd, HDC hdc, Draw drawer)
 {
 	Board board(hWnd);
-	Draw drawer(hWnd, hdc);
 	
 	drawer.DrawPadding(&board);
 	drawer.DrawBoard(&board);
@@ -25,16 +23,27 @@ BOOL Game::paint(HWND hWnd, HDC hdc)
 
 	drawer.DrawBoardLines(&board);
 
+	drawer.DrawCells(gameBoard);
+
 	return TRUE;
 }
 
 BOOL Game::ReserveCell(int index)
 {
-	if (gameBoard[index] == 1) {
+	if (gameBoard[index] != 0) {
 		return FALSE;
 	}
 	else {
-		gameBoard[index] = 1;
+		gameBoard[index] = playerTurn;
 		return TRUE;
 	}
+}
+
+BOOL Game::OnCellClicked(int index)
+{
+	if (ReserveCell(index)) {
+		playerTurn = (playerTurn == 2) ? 1 : 2;
+	}
+	
+	return TRUE;
 }

@@ -6,6 +6,7 @@
 #include "Game.h"
 #include "Window.h"
 #include "Board.h"
+#include "Draw.h"
 
 #define MAX_LOADSTRING 100
 
@@ -13,11 +14,6 @@
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
-
-Game game;
-Window window;
-
-HBRUSH HBRblue, HBRred; //graphics class
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -130,15 +126,17 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_DESTROY  - post a quit message and return
 //
 
+Game game;
+Window window;
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    switch (message)
+	HDC ghdc = GetDC(hWnd);
+
+	switch (message)
     {
 	case WM_CREATE:
 		{
-			// paint/graphics class <including board (some functions)>
-			HBRblue = CreateSolidBrush(RGB(0, 0, 255));
-			HBRred  = CreateSolidBrush(RGB(255, 0, 0));
 		}
 		break;
     case WM_COMMAND:
@@ -165,37 +163,49 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			int index = window.GetCellIndex(hWnd, xPos, yPos);
 
-			HDC hdc = GetDC(hWnd); //temp
-			if (hdc != NULL)
+			if (ghdc != NULL)
 			{
 				/*
 				Debug index
+
 				WCHAR temp[100];
 				wsprintf(temp, L"Index = %d", index);
 				TextOut(hdc, xPos, yPos, temp, lstrlen(temp));
 				*/
 
 				if (index != -1) {
-
 					//game class for logic
+					game.OnCellClicked(index);
 
-					Board board(hWnd); //temp
-					RECT cell;
-
-					board.GetCellRect(hWnd, index, &cell);
-					if (game.ReserveCell(index)) {
-						FillRect(hdc, &cell, (game.playerTurn == 2) ? HBRred : HBRblue);
-						game.playerTurn = (game.playerTurn == 2) ? 1 : 2;
-					}
-					
-				}
-				else
-				{
-					//TODO: error
+					RedrawWindow(hWnd, NULL, NULL, RDW_ERASE | RDW_ERASENOW | RDW_INVALIDATE);					
 				}
 
 			}
-			ReleaseDC(hWnd, hdc);
+		}
+		break;
+	case WM_MOUSEMOVE:
+		{
+			if (ghdc != NULL)
+			{
+				RedrawWindow(hWnd, NULL, NULL, RDW_ERASE | RDW_ERASENOW | RDW_INVALIDATE);
+			
+				POINT point;
+				GetCursorPos(&point);
+				ScreenToClient(hWnd, &point);
+
+				Draw drawer(hWnd, ghdc); //temp
+				drawer.DrawCrosshair(&point);				
+			}
+		}
+		break;
+	case WM_ERASEBKGND:
+		{
+			if (ghdc != NULL)
+			{
+				RECT rc;
+				GetClientRect(hWnd, &rc);
+				FillRect(ghdc, &rc, (HBRUSH)GetStockObject(GRAY_BRUSH));
+			}
 		}
 		break;
 	case WM_GETMINMAXINFO:
@@ -208,19 +218,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
 			
-			game.paint(hWnd, hdc);
+			Draw drawer(hWnd, hdc);
+			game.paint(hWnd, hdc, drawer);
 
             EndPaint(hWnd, &ps);
         }
         break;
     case WM_DESTROY:
-		DeleteObject(HBRblue);
-		DeleteObject(HBRred);
         PostQuitMessage(0);
         break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
+	ReleaseDC(hWnd, ghdc);
     return 0;
 }
 

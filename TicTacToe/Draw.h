@@ -13,5 +13,8 @@ public:
 	void DrawLine(int x1, int y1, int x2, int y2);
 	BOOL DrawBoardLines(Board * board);
 	BOOL DrawManyLines(Board * board);
+	BOOL DrawCrosshair(LPPOINT);
+	BOOL DrawCells(int * gb);
+	HBRUSH HBRblue, HBRred;
 };
 
