@@ -110,9 +110,7 @@ BOOL Draw::DrawCells(int * gb)
 
 			board.GetCellRect(window, i, &cell);
 
-			HBRUSH HBRreds = CreateSolidBrush(RGB(255, 0, 0));
-			FillRect(context, &cell, (gb[i] == 2) ? HBRreds : HBRblue);
-			DeleteObject(HBRred);
+			FillRect(context, &cell, (gb[i] == 2) ? HBRred : HBRblue);
 		}
 
 	}
