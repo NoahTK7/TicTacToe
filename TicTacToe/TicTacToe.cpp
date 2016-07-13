@@ -72,8 +72,8 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
     wcex.cbSize = sizeof(WNDCLASSEX);
 
-    wcex.style          = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc    = WndProc;
+    wcex.style			= CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc    = WndProc;
     wcex.cbClsExtra     = 0;
     wcex.cbWndExtra     = 0;
     wcex.hInstance      = hInstance;
@@ -81,7 +81,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
 //  wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW + 1);
 	wcex.hbrBackground  = (HBRUSH)GetStockObject(GRAY_BRUSH);
-    wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_TICTACTOE);
+	wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_TICTACTOE);
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
@@ -177,7 +177,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					//game class for logic
 					game.OnCellClicked(index);
 
-					RedrawWindow(hWnd, NULL, NULL, RDW_ERASE | RDW_ERASENOW | RDW_INVALIDATE);					
+					RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE);					
 				}
 
 			}
@@ -185,29 +185,36 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_MOUSEMOVE:
 		{
-			if (ghdc != NULL)
-			{
-				RedrawWindow(hWnd, NULL, NULL, RDW_ERASE | RDW_ERASENOW | RDW_INVALIDATE);
-			
-				POINT point;
-				GetCursorPos(&point);
-				ScreenToClient(hWnd, &point);
+			//if (ghdc != NULL)
+			//{
+			//	RedrawWindow(hWnd, NULL, NULL, RDW_ERASE | RDW_ERASENOW | RDW_INVALIDATE);
+			//
+			//	POINT point;
+			//	GetCursorPos(&point);
+			//	ScreenToClient(hWnd, &point);
 
-				Draw drawer(hWnd, ghdc); //temp
-				drawer.DrawCrosshair(&point);				
-			}
+			//	Draw drawer(hWnd, ghdc); //temp
+			//	drawer.DrawCrosshair(&point);		
+			//}
 		}
 		break;
-	case WM_ERASEBKGND:
-		{
-			if (ghdc != NULL)
-			{
-				RECT rc;
-				GetClientRect(hWnd, &rc);
-				FillRect(ghdc, &rc, (HBRUSH)GetStockObject(GRAY_BRUSH));
-			}
-		}
-		break;
+
+	//TODO
+	//
+	//	Reduce flickering, dont repaint entire window, background
+	//
+	// moved to  Draw::DrawBackground
+	//case WM_ERASEBKGND:
+	//	{
+	//		//return 1;
+	//		/*if (ghdc != NULL)
+	//		{
+	//			RECT rc;
+	//			GetClientRect(hWnd, &rc);
+	//			FillRect(ghdc, &rc, (HBRUSH)GetStockObject(GRAY_BRUSH));
+	//		}*/
+	//	}
+	//	break;
 	case WM_GETMINMAXINFO:
 		{
 			window.setMinSize(lParam, Board::CELL_SIZE*5, Board::CELL_SIZE*5);
@@ -215,11 +222,42 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
     case WM_PAINT:
         {
+			HDC          hdcMem;
+			HBITMAP      hbmMem;
+			HANDLE       hOld;
+
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
 			
-			Draw drawer(hWnd, hdc);
-			game.paint(hWnd, hdc, drawer);
+			//Draw drawer(hWnd, hdc);
+			//game.paint(hWnd, hdc, drawer);
+
+			RECT rect;
+			int width;
+			int height;
+
+			if (GetWindowRect(hWnd, &rect))
+			{
+				width = rect.right - rect.left;
+				height = rect.bottom - rect.top;
+			}
+
+			hdcMem = CreateCompatibleDC(hdc);
+			hbmMem = CreateCompatibleBitmap(hdc, width, height);
+
+			hOld = SelectObject(hdcMem, hbmMem);
+
+			// Draw into hdcMem here
+			Draw drawer(hWnd, hdcMem);
+			game.paint(hWnd, hdcMem, drawer);
+
+			// Transfer the off-screen DC to the screen
+			BitBlt(hdc, 0, 0, width, height, hdcMem, 0, 0, SRCCOPY);
+
+			// Free-up the off-screen DC
+			SelectObject(hdcMem, hOld);
+			DeleteObject(hbmMem);
+			DeleteDC(hdcMem);			
 
             EndPaint(hWnd, &ps);
         }

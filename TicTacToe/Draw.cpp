@@ -98,10 +98,10 @@ BOOL Draw::DrawCells(int * gb)
 {
 	for (int i = 0; i < 9; ++i) {
 		
-		//debug gameboard array
-		WCHAR temp[100];
-		wsprintf(temp, L"Index = %d", gb[i]);
-		TextOut(context, i*100, 0, temp, lstrlen(temp));
+		////debug gameboard array
+		//WCHAR temp[100];
+		//wsprintf(temp, L"Index = %d", gb[i]);
+		//TextOut(context, i*100, 0, temp, lstrlen(temp));
 
 		if (gb[i] != 0) {
 
@@ -127,3 +127,14 @@ BOOL Draw::DrawCells(int * gb)
 //	DeleteObject(HBRblue);
 //	DeleteObject(HBRred);
 //}
+
+BOOL Draw::DrawBackground()
+{
+	RECT rc;
+	if (GetClientRect(window, &rc)) {
+		FillRect(context, &rc, (HBRUSH)GetStockObject(GRAY_BRUSH));
+		return TRUE;
+	}
+	
+	return FALSE;
+}

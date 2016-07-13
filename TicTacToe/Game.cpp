@@ -15,6 +15,8 @@ BOOL Game::paint(HWND hWnd, HDC hdc, Draw drawer)
 {
 	Board board(hWnd);
 	
+	drawer.DrawBackground();
+
 	drawer.DrawPadding(&board);
 	drawer.DrawBoard(&board);
 

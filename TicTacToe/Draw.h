@@ -15,6 +15,7 @@ public:
 	BOOL DrawManyLines(Board * board);
 	BOOL DrawCrosshair(LPPOINT);
 	BOOL DrawCells(int * gb);
+	BOOL DrawBackground();
 	HBRUSH HBRblue, HBRred;
 };
 
